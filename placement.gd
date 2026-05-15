@@ -138,3 +138,4 @@ func _get_drag_component(node: Node) -> DragWithMouse:
 		if child is DragWithMouse:
 			return child
 	return null
+
