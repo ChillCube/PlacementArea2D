@@ -30,3 +30,8 @@ push-all-addons
 ```
 
 
+
+## Used By
+1 other ChillCube addon(s) depend on this:
+
+- [PlaceAbleObject2D](https://github.com/ChillCube/PlaceAbleObject2D)
