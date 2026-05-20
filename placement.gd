@@ -2,15 +2,15 @@ extends Area2D
 class_name PlacementArea2D
 
 @export_group("Placement Settings")
-@export var max_capacity : int = 1
-@export var spacing : float = 60.0 
-@export var horizontal_layout : bool = true
+@export var max_capacity : int = 1 ## Maximum number of objects this area can hold at once
+@export var spacing : float = 60.0 ## Distance between held objects when snap_to_layout is true
+@export var horizontal_layout : bool = true ## If true, objects are laid out in a row; if false, in a column
 
 ## TOGGLE: If true, card slides to the layout position. If false, card stays exactly where dropped.
 @export var snap_to_layout : bool = false
 
 @export_group("Interaction Settings")
-@export var lock_cards_on_drop : bool = false 
+@export var lock_cards_on_drop : bool = false ## Disable dragging for objects after they are placed here
 
 var held_objects : Array[Node2D] = []
 
@@ -19,10 +19,10 @@ func _ready() -> void:
 	monitorable = true
 	child_exiting_tree.connect(_on_child_exited)
 
-func is_full() -> bool:
+func is_full() -> bool: ## Returns true when the number of held objects has reached max_capacity
 	return held_objects.size() >= max_capacity
 
-func snap_object(obj: Node2D) -> void:
+func snap_object(obj: Node2D) -> void: ## Reparents obj into this area, preserving its world position, then optionally snaps to the layout
 	if is_full() or obj in held_objects: return
 
 	# 1. Store current world position to prevent "teleporting" during reparenting
