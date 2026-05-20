@@ -12,6 +12,11 @@ class_name PlacementArea2D
 @export_group("Interaction Settings")
 @export var lock_cards_on_drop : bool = false ## Disable dragging for objects after they are placed here
 
+signal object_snapped(obj: Node2D) ## Emitted when an object is successfully snapped into this area
+signal object_removed(obj: Node2D) ## Emitted when an object leaves this area
+signal area_full ## Emitted when the area reaches max_capacity
+signal area_emptied ## Emitted when the last held object leaves the area
+
 var held_objects : Array[Node2D] = []
 
 func _ready() -> void:
@@ -46,6 +51,9 @@ func snap_object(obj: Node2D) -> void: ## Reparents obj into this area, preservi
 	
 	# 5. Connect signals for removal/dragging
 	_connect_drag_signals(obj)
+	object_snapped.emit(obj)
+	if is_full():
+		area_full.emit()
 
 func _update_layout_targets() -> void:
 	var count = held_objects.size()
@@ -85,6 +93,9 @@ func _connect_drag_signals(obj: Node2D) -> void:
 func _on_object_removed(obj: Node2D) -> void:
 	if obj in held_objects:
 		held_objects.erase(obj)
+		object_removed.emit(obj)
+		if held_objects.is_empty():
+			area_emptied.emit()
 		# ... (your existing reparenting logic to scene tree) ...
 		if snap_to_layout:
 			_update_layout_targets()
@@ -114,6 +125,9 @@ func _force_stop_movers(obj: Node2D) -> void:
 func _on_child_exited(node: Node) -> void:
 	if node is Node2D and node in held_objects:
 		held_objects.erase(node)
+		object_removed.emit(node as Node2D)
+		if held_objects.is_empty():
+			area_emptied.emit()
 		if snap_to_layout:
 			_apply_layout_positions()
 

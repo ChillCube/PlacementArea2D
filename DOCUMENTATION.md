@@ -15,6 +15,14 @@ a node that lets you define areas to place objects (like cards) onto the screen
 | **horizontal_layout** | `bool` | `true` | If true, objects are laid out in a row; if false, in a column |
 | **lock_cards_on_drop** | `bool` | `false` | Disable dragging for objects after they are placed here |
 
+### 🔔 Signals
+| Signal | Arguments | Description |
+| :--- | :--- | :--- |
+| **object_snapped** | `obj: Node2D` |  Emitted when an object is successfully snapped into this area |
+| **object_removed** | `obj: Node2D` |  Emitted when an object leaves this area |
+| **area_full** | - |  Emitted when the area reaches max_capacity |
+| **area_emptied** | - |  Emitted when the last held object leaves the area |
+
 ### 🛠️ Methods
 | Method | Arguments | Returns | Description |
 | :--- | :--- | :--- | :--- |
