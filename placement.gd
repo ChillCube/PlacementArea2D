@@ -9,6 +9,10 @@ class_name PlacementArea2D
 ## TOGGLE: If true, card slides to the layout position. If false, card stays exactly where dropped.
 @export var snap_to_layout : bool = false
 
+@export_group("Class Filter")
+@export var accepted_classes : Array[String] = ["PlaceAbleUIObject2D"] ## If non-empty, only objects whose class_name is in this list are accepted
+@export var rejected_classes : Array[String] = [] ## Objects whose class_name is in this list are always rejected
+
 @export_group("Interaction Settings")
 @export var lock_cards_on_drop : bool = false ## Disable dragging for objects after they are placed here
 
@@ -27,26 +31,32 @@ func _ready() -> void:
 func is_full() -> bool: ## Returns true when the number of held objects has reached max_capacity
 	return held_objects.size() >= max_capacity
 
+func can_accept(obj: Node2D) -> bool: ## Returns false if obj's class is rejected or not in the accepted list
+	var cn := _get_object_class_name(obj)
+	if rejected_classes.size() > 0 and cn in rejected_classes:
+		return false
+	if accepted_classes.size() > 0 and cn not in accepted_classes:
+		return false
+	return true
+
+func _get_object_class_name(obj: Node) -> String:
+	var script = obj.get_script()
+	if script and script.get_global_name() != "":
+		return script.get_global_name()
+	return obj.get_class()
+
 func snap_object(obj: Node2D) -> void: ## Reparents obj into this area, preserving its world position, then optionally snaps to the layout
-	if is_full() or obj in held_objects: return
+	if is_full() or obj in held_objects or not can_accept(obj): return
 
-	# 1. Store current world position to prevent "teleporting" during reparenting
-	var saved_global_pos = obj.global_position
-
-	# 2. Change Parent
-	if obj.get_parent():
-		obj.get_parent().remove_child(obj)
-	add_child(obj)
+	# 1. Reparent while keeping the object's exact world position
+	obj.reparent(self, true)
+	obj.z_index = 1
 	held_objects.append(obj)
-	
-	# 3. Immediately sync the card's physical position to where it was released
-	obj.global_position = saved_global_pos
-	
-	# 4. Update the Mover's Target
+
+	# 2. Update the Mover's Target
 	if snap_to_layout:
 		_update_layout_targets()
 	else:
-		# If NOT snapping, tell the mover to stay exactly where the mouse let go
 		_sync_mover_to_current(obj)
 	
 	# 5. Connect signals for removal/dragging
