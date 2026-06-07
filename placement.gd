@@ -41,8 +41,10 @@ func can_accept(obj: Node2D) -> bool: ## Returns false if obj's class is rejecte
 
 func _get_object_class_name(obj: Node) -> String:
 	var script = obj.get_script()
-	if script and script.get_global_name() != "":
-		return script.get_global_name()
+	while script:
+		if script.get_global_name() != "":
+			return script.get_global_name()
+		script = script.get_base_script()
 	return obj.get_class()
 
 func snap_object(obj: Node2D) -> void: ## Reparents obj into this area, preserving its world position, then optionally snaps to the layout
@@ -61,7 +63,7 @@ func snap_object(obj: Node2D) -> void: ## Reparents obj into this area, preservi
 	
 	# 5. Connect signals for removal/dragging
 	_connect_drag_signals(obj)
-	object_snapped.emit(obj)
+	emit_signal("object_snapped", obj)
 	if is_full():
 		area_full.emit()
 
@@ -87,7 +89,7 @@ func _update_layout_targets() -> void:
 func _sync_mover_to_current(obj: Node2D) -> void:
 	var mover = obj.get_node_or_null("SmoothMovement")
 	if mover:
-		mover.global_target_position = obj.global_position
+		mover.global_target_position = global_position
 
 func _connect_drag_signals(obj: Node2D) -> void:
 	var drag_node = _get_drag_component(obj)

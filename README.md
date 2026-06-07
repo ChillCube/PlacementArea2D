@@ -32,4 +32,4 @@ push-all-addons
 2 other ChillCube addon(s) depend on this:
 
 - [SpritePlacement](https://github.com/ChillCube/SpritePlacement)
-- [PlaceAbleObject2D](https://github.com/ChillCube/PlaceAbleObject2D)
+- [Card Hand](https://github.com/ChillCube/Card_Hand)
