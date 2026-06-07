@@ -29,7 +29,6 @@ push-all-addons
 ```
 
 ## Used By
-2 other ChillCube addon(s) depend on this:
+1 other ChillCube addon(s) depend on this:
 
-- [SpritePlacement](https://github.com/ChillCube/SpritePlacement)
 - [Card Hand](https://github.com/ChillCube/Card_Hand)
